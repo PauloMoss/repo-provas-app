@@ -1,5 +1,5 @@
-import { Link, useHistory } from 'react-router-dom';
-import { useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Loader from "react-loader-spinner";
 
@@ -8,19 +8,21 @@ import { Container, Input, Select, Button, UserAlert } from './Styles';
 export default function AddNewTest() {
 
     const history = useHistory();
+    const [testParams, setTestParams] = useState(null);
     const [link, setLink] = useState("");
-    const [subject, setSubject] = useState("");
-    const [teacher, setTeacher] = useState("");
-    const [category, setCategory] = useState("");
+    const [subject, setSubject] = useState(null);
+    const [teacher, setTeacher] = useState(null);
+    const [category, setCategory] = useState(null);
     const [buttonStatus, setButtonStatus] = useState({ status:"Cadastrar", userAlert: "", isDisabled: false});
     const { status, userAlert, isDisabled } = buttonStatus;
+    console.log({link, subjectId: subject.id, teacherId: teacher, categoryId: category, periodId: 1})
+    useEffect(()=>{
+        const request = axios.get("http://localhost:4000/subjects/new_test");
+        request.then(response => {
+            setTestParams(response.data)
+        })
+    },[])
 
-    const context = {
-        subjects: [{id: 1, name:'Materia 1', teachers:['T1','T2']},{id: 2,name:'Materia 2',teachers:['T3','T4']},{id: 3,name:'Materia 3',teachers:['T5','T6']}],
-        teachers: ['Fulano 1','Fulano 2','Fulano 3'],
-        category: ['P1','P2','PF']
-    }
-    console.log(subject)
     function handleOnChange(e) {
         setLink(e.target.value)
     }
@@ -31,7 +33,7 @@ export default function AddNewTest() {
         
         setButtonStatus({status:<Loader type="ThreeDots" color="#FFFFFF" height={19} width={50}/>, userAlert: "", isDisabled: true});
 
-        const body = {link, subject: subject.name, teacher, category};
+        const body = {link, subjectId: subject.id, teacherId: teacher, categoryId: category, periodId: 1};
         console.log(body)
         const request = axios.post("http://localhost:4000/new_test", body);
         request.then(() => history.push("/"));
@@ -46,17 +48,17 @@ export default function AddNewTest() {
                 <h1>RepoProvas</h1>
                 <form onSubmit={userSignUp}>
                     <Input type="text" placeholder="link" value={link} disabled={isDisabled} onChange={e => handleOnChange(e)}/>
-                    <Select onChange={e => setSubject(context.subjects.find(n => n.id == e.target.value))}>
+                    <Select onChange={e => setSubject(testParams.subjects.find(n => n.id === Number(e.target.value)))}>
                         <option disabled selected value > -- Selecione uma Disciplina -- </option>
-                        {context.subjects.map(s => <option value={s.id}>{s.name}</option>)}
+                        {testParams?.subjects.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
                     </Select>
-                    <Select onChange={(e) => setTeacher(e.target.value)}>
+                    <Select onChange={(e) => setTeacher(Number(e.target.value))}>
                         <option disabled selected value > -- Selecione um Professor -- </option>
-                        {subject ? subject.teachers.map(t => <option value={t}>{t}</option>) : ""}
+                        {subject ? subject.teachers.map(t => <option key={t.id} value={t.id}>{t.name}</option>) : ""}
                     </Select>
-                    <Select onChange={(e) => setCategory(e.target.value)}>
+                    <Select onChange={(e) => setCategory(Number(e.target.value))}>
                         <option disabled selected value > -- Selecione o tipo de Prova -- </option>
-                        {context.category.map(c => <option value={c}>{c}</option>)}
+                        {testParams?.categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                     </Select>
                     <Button type="submit" >{status}</Button>
                 </form>
