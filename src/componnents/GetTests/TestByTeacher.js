@@ -4,20 +4,20 @@ import axios from 'axios';
 
 import { Container, Title, Item } from './Syles';
 
-export default function TestBySubject() {
+export default function TestByTeacher() {
 
-    const { id, subject } = useParams();
-    const [testsBySubject, setTestsBySubject] = useState(null);
+    const { id, teacher } = useParams();
+    const [testsByTeachers, setTestsByTeachers] = useState(null);
     const [categories, setCategories] = useState([]);
 
     useEffect(()=>{
-        const request = axios.get(`http://localhost:4000/tests/subject/${id}`);
+        const request = axios.get(`http://localhost:4000/tests/teacher/${id}`);
         request.then(response => {
-            setTestsBySubject(response.data)
+            setTestsByTeachers(response.data)
         })
     },[])
 
-    testsBySubject && testsBySubject[0].tests.forEach(t => {
+    testsByTeachers && testsByTeachers[0].tests.forEach(t => {
         if(categories.length === 0 || !categories.find(c => t.category.name === c.name)){
             categories.push(t.category)
         }
@@ -25,14 +25,14 @@ export default function TestBySubject() {
 
     return (
         <Container>
-            <h1>{subject}</h1>
+            <h1>{teacher}</h1>
             {categories.map(c => {
                 return (
                     <>
                         <Title key={c.id}>{c.name}</Title>
-                        {testsBySubject && testsBySubject[0].tests.filter(t => t.category.name === c.name).map(s => {
+                        {testsByTeachers && testsByTeachers[0].tests.filter(t => t.category.name === c.name).map(s => {
                             return (
-                            <a href={`${s.link}`}><Item key={s.id}>Professor:{s.teacher.name} , Periodo:{s.period.name}</Item></a>
+                            <a href={`${s.link}`}><Item key={s.id}>Disciplina:{s.subject.name} , Periodo:{s.period.name}</Item></a>
                             )
                         })}
                     </>

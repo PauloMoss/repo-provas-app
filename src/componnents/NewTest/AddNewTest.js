@@ -2,8 +2,10 @@ import { useHistory } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Loader from "react-loader-spinner";
+import dayjs from 'dayjs';
 
-import { Container, Input, Select, Button, UserAlert } from './Styles';
+
+import { Container, Input, Select, Button, UserAlert, SelectYear } from './Styles';
 
 export default function AddNewTest() {
 
@@ -15,7 +17,11 @@ export default function AddNewTest() {
     const [category, setCategory] = useState(null);
     const [buttonStatus, setButtonStatus] = useState({ status:"Cadastrar", userAlert: "", isDisabled: false});
     const { status, userAlert, isDisabled } = buttonStatus;
-    console.log({link, subjectId: subject.id, teacherId: teacher, categoryId: category, periodId: 1})
+
+    const [year, setYear] = useState(new Date());
+    const [period, setPeriod] = useState(null);
+    const semester = [`${dayjs(year).format("YYYY")}.1`,`${dayjs(year).format("YYYY")}.2`]
+
     useEffect(()=>{
         const request = axios.get("http://localhost:4000/subjects/new_test");
         request.then(response => {
@@ -33,7 +39,7 @@ export default function AddNewTest() {
         
         setButtonStatus({status:<Loader type="ThreeDots" color="#FFFFFF" height={19} width={50}/>, userAlert: "", isDisabled: true});
 
-        const body = {link, subjectId: subject.id, teacherId: teacher, categoryId: category, periodId: 1};
+        const body = {link, subjectId: subject.id, teacherId: teacher, categoryId: category, period , year };
         console.log(body)
         const request = axios.post("http://localhost:4000/new_test", body);
         request.then(() => history.push("/"));
@@ -60,10 +66,21 @@ export default function AddNewTest() {
                         <option disabled selected value > -- Selecione o tipo de Prova -- </option>
                         {testParams?.categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                     </Select>
+                    <SelectYear
+                        selected={year}
+                        onChange={(date) => setYear(date)}
+                        showYearPicker
+                        dateFormat="yyyy"
+                    />
+                    <Select onChange={(e) => setPeriod(e.target.value)}>
+                        <option disabled selected value > -- Selecione o Periodo -- </option>
+                        {semester.map((s,i) => <option key={i} value={s}>{s}</option>)}
+                    </Select>
                     <Button type="submit" >{status}</Button>
                 </form>
                 {userAlert}
             </Container>
+            
         </>
     );
 }

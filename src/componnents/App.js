@@ -6,7 +6,9 @@ import Header from './Header/Header';
 import Home from './Home/Home';
 import AddNewTest from './NewTest/AddNewTest';
 import AllSubjects from './GetTests/AllSubjects';
+import AllTeachers from './GetTests/AllTeachers';
 import TestBySubject from './GetTests/TestBySubject';
+import TestByTeacher from './GetTests/TestByTeacher';
 
 export default function App() {
     return(
@@ -25,10 +27,17 @@ export default function App() {
                     <Header />
                     <AllSubjects/>
                 </Route>
-
                 <Route exact path="/subjects/:id/:subject">
                     <Header />
                     <TestBySubject/>
+                </Route>
+                <Route exact path="/teachers">
+                    <Header />
+                    <AllTeachers/>
+                </Route>
+                <Route exact path="/teachers/:id/:teacher">
+                    <Header />
+                    <TestByTeacher/>
                 </Route>
             </Switch>
         </Router>

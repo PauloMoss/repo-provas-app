@@ -22,6 +22,7 @@ export default function Home() {
         <Container>
             <Link to="/send_test"><Button>enviar prova</Button></Link>
             <Link to="/subjects"><Button>provas por disciplina</Button></Link>
+            <Link to="/teachers"><Button>provas por professores</Button></Link>
         </Container>
     );
 }
