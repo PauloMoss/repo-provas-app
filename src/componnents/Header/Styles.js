@@ -6,7 +6,7 @@ const HeaderStyles = styled.header`
     background-color: #151515;
     padding: 0 22px;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
     position: fixed;
     top: 0;
@@ -42,9 +42,8 @@ const Menu = styled.div`
 `;
 
 const ToggleMenu = styled.div`
-    width: 150px;
-    height: 125px;
-    background-color: #000;
+    width: 200px;
+    background-color: #151515;
     position: fixed;
     top: 75px;
     right: 0;
@@ -54,6 +53,7 @@ const ToggleMenu = styled.div`
 
     ul {
         margin-top: 15px;
+        margin-bottom: 15px;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -61,11 +61,11 @@ const ToggleMenu = styled.div`
     }
 
     li {
-        font-size: 18px;
+        font-size: 15px;
         font-weight: 700;
+        margin-top: 10px;
         color: #fff;
-        margin-top: 7px;
-        cursor: pointer;
+        text-align: center;
     }
 `;
 

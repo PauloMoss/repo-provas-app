@@ -25,8 +25,10 @@ export default function Header() {
                 <ClickAwayListener onClickAway={() => setMenuSelected(false)}>
                     <ToggleMenu menuSelected={menuSelected}>
                         <ul>
-                            <Link to={"/"}><li>Por disciplinas</li></Link>
-                            <Link to={"/"}><li>Por professores</li></Link>
+                            <li><Link to={"/"}>Home</Link></li>
+                            <li><Link to={"/send_test"}>Enviar Prova</Link></li>
+                            <li><Link to={"/subjects"}>Provas por disciplinas</Link></li>
+                            <li><Link to={"/teachers"}>Provas por professores</Link></li>
                         </ul>
                     </ToggleMenu>
                 </ClickAwayListener>
