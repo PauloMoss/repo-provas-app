@@ -2,11 +2,18 @@ import styled from 'styled-components';
 
 const Container = styled.div`
 display: flex;
+flex-direction: column;
 align-items: center;
 justify-content:center;
 width: 80%;
 margin: 200px auto;
-
+        h1 {
+            margin-top: 160px;
+            margin-bottom: 40px;
+            color:#FFFFFF;
+            font-size: 40px;
+            font-family: 'Saira Stencil One', cursive;
+        }
         button {
             margin-top: 10px;
             margin-bottom: 25px;

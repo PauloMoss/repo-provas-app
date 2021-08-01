@@ -3,7 +3,7 @@ import styled from 'styled-components';
 const HeaderStyles = styled.header`
     width: 100%;
     height: 75px;
-    background-color: #151515;
+    background-color: #ec5d98;
     padding: 0 22px;
     display: flex;
     justify-content: flex-end;
@@ -43,7 +43,7 @@ const Menu = styled.div`
 
 const ToggleMenu = styled.div`
     width: 200px;
-    background-color: #151515;
+    background-color: #ec5d98;
     position: fixed;
     top: 75px;
     right: 0;
@@ -64,7 +64,7 @@ const ToggleMenu = styled.div`
         font-size: 15px;
         font-weight: 700;
         margin-top: 10px;
-        color: #fff;
+        color: #000;
         text-align: center;
     }
 `;

@@ -23,7 +23,7 @@ export default function AddNewTest() {
     const semester = [`${dayjs(year).format("YYYY")}.1`,`${dayjs(year).format("YYYY")}.2`]
 
     useEffect(()=>{
-        const request = axios.get("http://localhost:4000/subjects/new_test");
+        const request = axios.get(`${process.env.REACT_APP_API_BASE_URL}/subjects/new_test`);
         request.then(response => {
             setTestParams(response.data)
         })
@@ -35,13 +35,32 @@ export default function AddNewTest() {
 
     function userSignUp(event) {
         event.preventDefault();
-        
-        
+
+        if (!link) {
+            setButtonStatus({...buttonStatus, userAlert: <UserAlert>Insira um link para o teste</UserAlert>});
+            return;
+        } else if(!subject) {
+            setButtonStatus({...buttonStatus, userAlert: <UserAlert>Por favor, selecione uma disciplina</UserAlert>});
+            return;
+        } else if(!teacher) {
+            setButtonStatus({...buttonStatus, userAlert: <UserAlert>Por favor, selecione um professor</UserAlert>});
+            return;
+        } else if(!category) {
+            setButtonStatus({...buttonStatus, userAlert: <UserAlert>Por favor, selecione uma prova</UserAlert>});
+            return;
+        } else if(!period) {
+            setButtonStatus({...buttonStatus, userAlert: <UserAlert>Por favor, selecione um periodo</UserAlert>});
+            return;
+        } else if(!year) {
+            setButtonStatus({...buttonStatus, userAlert: <UserAlert>Por favor, selecione um ano</UserAlert>});
+            return;
+        }
+
         setButtonStatus({status:<Loader type="ThreeDots" color="#FFFFFF" height={19} width={50}/>, userAlert: "", isDisabled: true});
 
         const body = {link, subjectId: subject.id, teacherId: teacher, categoryId: category, period , year };
-        console.log(body)
-        const request = axios.post("http://localhost:4000/new_test", body);
+
+        const request = axios.post(`${process.env.REACT_APP_API_BASE_URL}/new_test`, body);
         request.then(() => history.push("/"));
         request.catch(() => {
             setButtonStatus({status:"Cadastrar", userAlert: <UserAlert>Por favor, verifique os dados e tente novamente.</UserAlert>, isDisabled: false});

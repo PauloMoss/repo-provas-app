@@ -7,24 +7,28 @@ align-items: center;
 justify-content:center;
 width: 80%;
 margin: 200px auto;
+    h1 {
+        font-size: 25px;
+        margin-bottom: 30px;
+        font-family: 'Saira Stencil One', cursive;
+        color:#FFFFFF;
+    }
 
-        button {
-            margin-top: 10px;
-            margin-bottom: 25px;
-            border: none;
-        }
 `;
 
 const Title = styled.div`
-    height: 45px;
-    background: #A328D6;
+    margin: 15px;
     color: #FFFFFF;
     font-size: 20px;
+    font-weight: bold;
 `;
 
 const Item = styled.div`
+    display:flex;
+    justify-content: space-between;
     color: #FFFFFF;
     font-size: 15px;
+    margin-top: 8px;
 `;
 
 

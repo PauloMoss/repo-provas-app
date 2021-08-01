@@ -1,4 +1,4 @@
-import { Link, useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
@@ -9,7 +9,7 @@ export default function AllSubjects() {
     const [subjectsBySemester, setSubjectsBySemester] = useState(null);
 
     useEffect(()=>{
-        const request = axios.get("http://localhost:4000/subjects");
+        const request = axios.get(`${process.env.REACT_APP_API_BASE_URL}/subjects`);
         request.then(response => {
             setSubjectsBySemester(response.data)
         })
@@ -24,7 +24,7 @@ export default function AllSubjects() {
                         <Title key={semester.id}>{semester.name}</Title>
                         {semester.subjects.map(s => {
                             return (
-                            <Link to={`/subjects/${s.id}/${s.name}`}><Item key={s.id}>{s.name}</Item></Link>
+                            <Link key={s.id} to={`/subjects/${s.id}/${s.name}`}><Item>{s.name}</Item></Link>
                             )
                         })}
                     </>
