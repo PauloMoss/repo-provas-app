@@ -34,7 +34,7 @@ export default function GenericListOfTests(props) {
     return (
         <Container>
             <h1>{title}</h1>
-            {categories.map(c => {
+            {categories.length > 0 ? categories.map(c => {
                 return (
                     <>
                         <Title key={c.id}>{c.name}</Title>
@@ -52,7 +52,7 @@ export default function GenericListOfTests(props) {
                         : loading}
                     </>
                 );
-            })}
+            }) : "Nenhuma prova disponivel"}
         </Container>
     );
 }
