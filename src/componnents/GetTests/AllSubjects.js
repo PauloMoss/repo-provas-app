@@ -11,7 +11,8 @@ export default function AllSubjects() {
     useEffect(()=>{
         const request = axios.get(`${process.env.REACT_APP_API_BASE_URL}/subjects`);
         request.then(response => {
-            setSubjectsBySemester(response.data)
+            const semesterWithSubject = response.data.filter(s => s.subjects.length > 0)
+            setSubjectsBySemester(semesterWithSubject)
         })
     },[])
 
@@ -24,7 +25,7 @@ export default function AllSubjects() {
                         <Title key={semester.id}>{semester.name}</Title>
                         {semester.subjects.map(s => {
                             return (
-                            <Link key={s.id} to={`/subjects/${s.id}/${s.name}`}><Item>{s.name}</Item></Link>
+                            <Link key={s.id} to={`/subjects/${s.id}/${s.name}`}><Item key={s.id}>{s.name}</Item></Link>
                             )
                         })}
                     </>
