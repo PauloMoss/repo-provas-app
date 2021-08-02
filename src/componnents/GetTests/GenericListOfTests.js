@@ -4,13 +4,14 @@ import axios from 'axios';
 import { Container, Title, Item } from './Syles';
 import TestContext from '../../context/TestContext';
 import { Link } from 'react-router-dom';
-
+import Loader from 'react-loader-spinner';
 
 export default function GenericListOfTests(props) {
     
     const { title,type,url } = props;
     const { setTestLink } = useContext(TestContext);
     const [testsList, setTestsList] = useState(null);
+    const loading = <Loader type="Oval" color="#FFFFFF" height={40} width={40} />;
     const categories = [];
 
     useEffect(()=>{
@@ -37,23 +38,21 @@ export default function GenericListOfTests(props) {
                 return (
                     <>
                         <Title key={c.id}>{c.name}</Title>
-                        {testsList && testsList[0].tests.filter(t => t.category.name === c.name).map(s => {
-                        return (
-                            <Item key={s.id}>
-                                <Link to={`/test/${s.id}`} onClick={() => openTestModal(s.id, s.link)}>
-                                    <span>{s.period.name}</span> - <span>{type === "subject" ? s.teacher.name : s.subject.name}</span>
-                                </Link>
-                            </Item>)
-                        })}
+                        {testsList ? 
+                            testsList[0].tests.filter(t => t.category.name === c.name).length > 0 ? 
+                                testsList[0].tests.filter(t => t.category.name === c.name).map(s => {
+                                return (
+                                    <Item key={s.id}>
+                                        <Link to={`/test/${s.id}`} onClick={() => openTestModal(s.id, s.link)}>
+                                            <span>{s.period.name}</span> - <span>{type === "subject" ? s.teacher.name : s.subject.name}</span>
+                                        </Link>
+                                    </Item>)
+                                }) 
+                            : "Nenhuma prova disponivel"
+                        : loading}
                     </>
                 );
             })}
         </Container>
     );
 }
-
-/*<Item key={s.id}>
-                                <Link to={`/test/${s.id}`} onClick={() => teste(s.link)}>
-                                    <span>{s.period.name}</span> - <span>{type === "subject" ? s.teacher.name : s.subject.name}</span>
-                                </Link>
-                            </Item>*/

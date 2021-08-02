@@ -13,7 +13,7 @@ export default function Modal({ modalIsOpen, setModalIsOpen, testLink }) {
         <a href={testLink.link} target="_blank" rel="noreferrer"><button>Open in new tab</button></a>
 
         <ClickAwayListener onClickAway={() => setModalIsOpen(!modalIsOpen)} >
-        <iframe src={testLink.link} width="100%" height="100%" title={testLink.id}></iframe>
+            <object data={testLink.link} width="100%" height="100%" title={testLink.id}></object>
         </ClickAwayListener>
 
     </ModalStyle>

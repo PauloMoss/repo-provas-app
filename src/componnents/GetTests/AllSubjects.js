@@ -1,12 +1,14 @@
 import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import Loader from 'react-loader-spinner';
 
 import { Container, Title, Item } from './Syles';
 
 export default function AllSubjects() {
 
     const [subjectsBySemester, setSubjectsBySemester] = useState(null);
+    const loading = <Loader type="Oval" color="#FFFFFF" height={40} width={40} />;
 
     useEffect(()=>{
         const request = axios.get(`${process.env.REACT_APP_API_BASE_URL}/subjects`);
@@ -19,7 +21,7 @@ export default function AllSubjects() {
     return (
         <Container>
             <h1>Disciplinas</h1>
-            {subjectsBySemester?.map(semester => {
+            {subjectsBySemester ? subjectsBySemester.map(semester => {
                 return (
                     <>
                         <Title key={semester.id}>{semester.name}</Title>
@@ -30,9 +32,7 @@ export default function AllSubjects() {
                         })}
                     </>
                 );
-            })}
+            }) : loading}
         </Container>
     );
 }
-
-/**/
