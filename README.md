@@ -1,6 +1,6 @@
 # RepoProvas
 
-This app allows you to find old exams and study from it. You cand add a pdf link or search for a test.
+This app allows you to find old exams and study from it. You can add a new pdf link or search for a existing test.
 
 ## About
 
@@ -24,8 +24,8 @@ The following tools and frameworks were used in the construction of the project:
 ## How to run
 
 1 - Clone this repository </br>
-2 - Clone the back-end repository at https://github.com/PauloMoss/my-wallet-back </br>
-3 - Follow instructions to run back-end at https://github.com/PauloMoss/my-wallet-back </br>
+2 - Clone the back-end repository at https://github.com/PauloMoss/repo-provas-back </br>
+3 - Follow instructions to run back-end at https://github.com/PauloMoss/repo-provas-back </br>
 4 - Install dependencies </br>
 ```
 npm i
@@ -39,5 +39,3 @@ npm start
 npm run build
 ```
 7 - Finally access http://localhost:3000 on your favorite browser (unless it is Internet Explorer. In this case, review your life decisions)
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
