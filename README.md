@@ -13,6 +13,8 @@ This is an web application with which lots of people can study from old exams an
 - Find old exams searching by teachers
 - All tests are listed by categories (P1, P2, PF and 2a Ch)
 
+You can find the back end repository at https://github.com/PauloMoss/repo-provas-back
+
 ## Technologies
 
 The following tools and frameworks were used in the construction of the project:
@@ -25,17 +27,15 @@ The following tools and frameworks were used in the construction of the project:
 
 1 - Clone this repository </br>
 2 - Clone the back-end repository at https://github.com/PauloMoss/repo-provas-back </br>
-3 - Follow instructions to run back-end at https://github.com/PauloMoss/repo-provas-back </br>
-4 - Install dependencies </br>
+3 - Install dependencies </br>
 ```
 npm i
 ```
-5 - Run the front-end with </br>
+4 - Run the front-end with </br>
 ```
 npm start
 ```
-6 - You can optionally build the project running </br>
+5 - You can optionally build the project running </br>
 ```
 npm run build
 ```
-7 - Finally access http://localhost:3000 on your favorite browser (unless it is Internet Explorer. In this case, review your life decisions)
