@@ -1,40 +1,65 @@
-import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import axios from "axios";
-import Loader from "react-loader-spinner";
 import styled from "styled-components";
 
+import ListItem from "../components/ListItem";
+
+import {
+  getCourseSubjectsExams,
+  getCategories,
+  getCourses,
+} from "../services/apiFunctions";
+
 export default function AllSubjects() {
-  const [subjectsBySemester, setSubjectsBySemester] = useState(null);
-  const loading = <Loader type="Oval" color="#FFFFFF" height={40} width={40} />;
+  const [courses, setCourses] = useState(null);
+  const [course, setCourse] = useState(null);
+  const [examsCategories, setExamsCategories] = useState(null);
+  const [subjectsExams, setSubjectsExams] = useState(null);
 
   useEffect(() => {
-    const request = axios.get(`${process.env.REACT_APP_API_BASE_URL}/subjects`);
-    request.then((response) => {
-      const semesterWithSubject = response.data.filter((s) => s.subjects.length > 0);
-      setSubjectsBySemester(semesterWithSubject);
-    });
+    getCategories(setExamsCategories);
+    getCourses(setCourses);
   }, []);
+
+  useEffect(() => {
+    if (course) {
+      getCourseSubjectsExams(setSubjectsExams, course.id);
+    }
+  }, [course]);
 
   return (
     <Container>
-      <h1>Disciplinas</h1>
-      {subjectsBySemester
-        ? subjectsBySemester.map((semester) => {
-            return (
-              <>
-                <Title key={semester.id}>{semester.name}</Title>
-                {semester.subjects.map((s) => {
-                  return (
-                    <Link key={s.id} to={`/subjects/${s.id}/${s.name}`}>
-                      <Item key={s.id}>{s.name}</Item>
-                    </Link>
-                  );
-                })}
-              </>
-            );
-          })
-        : loading}
+      <h1>{course ? "Disciplinas" : "Cursos"}</h1>
+      {course &&
+        subjectsExams &&
+        subjectsExams.map((semester) => {
+          return (
+            <>
+              <Title key={semester.id}>{semester.name} Semestre</Title>
+              {semester.subjects.map((s) => {
+                return (
+                  <ListItem
+                    key={s.id}
+                    title={s.name}
+                    exams={s.exams}
+                    examsCategories={examsCategories}
+                  />
+                );
+              })}
+            </>
+          );
+        })}
+
+      {course ? (
+        <Button onClick={() => setCourse(null)}>Voltar</Button>
+      ) : (
+        courses?.map((c) => {
+          return (
+            <Item key={c.id} onClick={() => setCourse(c)}>
+              {c.name}
+            </Item>
+          );
+        })
+      )}
     </Container>
   );
 }
@@ -45,6 +70,7 @@ const Container = styled.div`
   align-items: center;
   justify-content: center;
   width: 80%;
+  max-width: 600px;
   margin: 200px auto;
   h1 {
     font-size: 25px;
@@ -54,17 +80,28 @@ const Container = styled.div`
   }
 `;
 
-const Title = styled.div`
-  margin: 15px;
-  color: #ffffff;
-  font-size: 20px;
-  font-weight: bold;
-`;
-
 const Item = styled.div`
   display: flex;
   justify-content: space-between;
   color: #ffffff;
   font-size: 15px;
   margin-top: 8px;
+  cursor: pointer;
+`;
+
+const Button = styled.button`
+  font-family: "Saira Stencil One", cursive;
+  font-weight: 400;
+  font-size: 19px;
+  color: #fff;
+  margin: 30px;
+  background: transparent;
+  border-radius: 20px;
+`;
+
+const Title = styled.div`
+  margin: 15px;
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: bold;
 `;

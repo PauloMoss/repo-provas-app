@@ -88,8 +88,8 @@ const Item = styled.div`
 `;
 
 const LinkImage = styled.img`
-  width: 150px;
-  height: 150px;
+  width: 180px;
+  height: 180px;
   object-fit: cover;
   box-shadow: 10px 5px 5px 1px rgba(0, 0, 0, 0.5);
   border-radius: 100px;

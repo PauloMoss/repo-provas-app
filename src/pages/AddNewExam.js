@@ -1,204 +1,231 @@
 import { useHistory } from "react-router-dom";
 import { useEffect, useState } from "react";
-import axios from "axios";
-import Loader from "react-loader-spinner";
+//import Loader from "react-loader-spinner";
 import dayjs from "dayjs";
 import styled from "styled-components";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+
+import FormControl from "@material-ui/core/FormControl";
+import InputLabel from "@material-ui/core/InputLabel";
+import OutlinedInput from "@material-ui/core/OutlinedInput";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import Button from "@material-ui/core/Button";
+import TextField from "@material-ui/core/TextField";
+import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
+import DateFnsUtils from "@date-io/date-fns";
+
+import {
+  getCategories,
+  getCourses,
+  getCourseSubjects,
+  getSubjectTeachers,
+  postNewExam,
+} from "../services/apiFunctions";
+import { validadeForm } from "../services/validadeForm";
 
 export default function AddNewExam() {
   const history = useHistory();
-  const [testParams, setTestParams] = useState(null);
-  const [link, setLink] = useState("");
-  const [subject, setSubject] = useState(null);
-  const [teacher, setTeacher] = useState(null);
-  const [category, setCategory] = useState(null);
-  const [buttonStatus, setButtonStatus] = useState({
-    status: "Cadastrar",
-    userAlert: "",
-    isDisabled: false,
-  });
-  const { status, userAlert, isDisabled } = buttonStatus;
 
-  const [year, setYear] = useState(new Date());
-  const [period, setPeriod] = useState(null);
-  const semester = [`${dayjs(year).format("YYYY")}.1`, `${dayjs(year).format("YYYY")}.2`];
+  const [categories, setCategories] = useState(null);
+  const [courses, setCourses] = useState(null);
+  const [subjects, setSubjects] = useState(null);
+  const [teachers, setTeachers] = useState(null);
+
+  const [link, setLink] = useState("");
+  const [course, setCourse] = useState(null);
+  const [subject, setSubject] = useState(null);
+  const [category, setCategory] = useState(null);
+  const [teacher, setTeacher] = useState(null);
+  const [isDisabled, setIsDisabled] = useState(false);
+
+  const [userAlert, setUserAlert] = useState("");
+
+  const [date, setDate] = useState(new Date());
+  const [semester, setSemester] = useState(null);
+  const [semesters, setSemesters] = useState(null);
 
   useEffect(() => {
-    const request = axios.get(`${process.env.REACT_APP_API_BASE_URL}/subjects/new_test`);
-    request.then((response) => {
-      setTestParams(response.data);
-    });
-  }, []);
+    getCategories(setCategories);
+    getCourses(setCourses);
+    setSemesters([
+      {
+        year: dayjs(date).format("YYYY"),
+        name: "1",
+      },
+      {
+        year: dayjs(date).format("YYYY"),
+        name: "2",
+      },
+    ]);
+  }, [date]);
 
-  function handleOnChange(e) {
-    setLink(e.target.value);
-  }
+  useEffect(() => {
+    setSubject(null);
 
-  function userSignUp(event) {
+    if (course) {
+      getCourseSubjects(setSubjects, course.id);
+    }
+  }, [course]);
+
+  useEffect(() => {
+    setTeachers(null);
+
+    if (subject) {
+      getSubjectTeachers(setTeachers, subject.id);
+    }
+  }, [subject]);
+
+  function sendExam(event) {
     event.preventDefault();
 
-    if (!link) {
-      setButtonStatus({
-        ...buttonStatus,
-        userAlert: <UserAlert>Insira um link para o teste</UserAlert>,
-      });
-      return;
-    } else if (!subject) {
-      setButtonStatus({
-        ...buttonStatus,
-        userAlert: <UserAlert>Por favor, selecione uma disciplina</UserAlert>,
-      });
-      return;
-    } else if (!teacher) {
-      setButtonStatus({
-        ...buttonStatus,
-        userAlert: <UserAlert>Por favor, selecione um professor</UserAlert>,
-      });
-      return;
-    } else if (!category) {
-      setButtonStatus({
-        ...buttonStatus,
-        userAlert: <UserAlert>Por favor, selecione uma prova</UserAlert>,
-      });
-      return;
-    } else if (!period) {
-      setButtonStatus({
-        ...buttonStatus,
-        userAlert: <UserAlert>Por favor, selecione um periodo</UserAlert>,
-      });
-      return;
-    } else if (!year) {
-      setButtonStatus({
-        ...buttonStatus,
-        userAlert: <UserAlert>Por favor, selecione um ano</UserAlert>,
-      });
-      return;
-    }
-
-    setButtonStatus({
-      status: <Loader type="ThreeDots" color="#FFFFFF" height={19} width={50} />,
-      userAlert: "",
-      isDisabled: true,
-    });
-
+    setIsDisabled(true);
     const body = {
       link,
       subjectId: subject.id,
-      teacherId: teacher,
-      categoryId: category,
-      period,
-      year,
+      teacherId: teacher.id,
+      categoryId: category.id,
+      semester,
     };
 
-    const request = axios.post(`${process.env.REACT_APP_API_BASE_URL}/new_test`, body);
-    request.then(() => history.push("/"));
-    request.catch(() => {
-      setButtonStatus({
-        status: "Cadastrar",
-        userAlert: (
-          <UserAlert>Por favor, verifique os dados e tente novamente.</UserAlert>
-        ),
-        isDisabled: false,
-      });
-    });
+    let validationAlert = validadeForm(body, userAlert);
+
+    if (validationAlert) {
+      setUserAlert(<UserAlert>{validationAlert}</UserAlert>);
+      return;
+    }
+
+    const postError = postNewExam(body);
+    if (!postError) {
+      history.push("/");
+      setIsDisabled(false);
+    } else {
+      setIsDisabled(false);
+      setUserAlert(
+        <UserAlert>
+          Erro {postError}, por favor verifique os dados e tente novamente.
+        </UserAlert>
+      );
+    }
   }
 
   return (
-    <>
-      <Container>
-        <h1>RepoProvas</h1>
-        <form onSubmit={userSignUp}>
-          <Input
-            type="text"
-            placeholder="link"
-            value={link}
+    <Page>
+      <Title>RepoProvas</Title>
+      <FormContainer onSubmit={sendExam}>
+        <FormControl variant="outlined" fullWidth>
+          <InputLabel htmlFor="exam-link">Pdf da prova</InputLabel>
+          <OutlinedInput
+            id="exam-link"
+            fullWidth
             disabled={isDisabled}
-            onChange={(e) => handleOnChange(e)}
+            label="Pdf da prova"
+            autoFocus
+            value={link}
+            onChange={(e) => setLink(e.target.value)}
           />
-          <Select
-            onChange={(e) =>
-              setSubject(testParams.subjects.find((n) => n.id === Number(e.target.value)))
-            }>
-            <option disabled selected value>
-              {" "}
-              -- Selecione uma Disciplina --{" "}
-            </option>
-            {testParams?.subjects.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.name}
-              </option>
-            ))}
-          </Select>
-          <Select onChange={(e) => setTeacher(Number(e.target.value))}>
-            <option disabled selected value>
-              {" "}
-              -- Selecione um Professor --{" "}
-            </option>
-            {subject
-              ? subject.teachers.map((t) => (
-                  <option key={t.id} value={t.id}>
-                    {t.name}
-                  </option>
-                ))
-              : ""}
-          </Select>
-          <Select onChange={(e) => setCategory(Number(e.target.value))}>
-            <option disabled selected value>
-              {" "}
-              -- Selecione o tipo de Prova --{" "}
-            </option>
-            {testParams?.categories.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </Select>
-          <SelectYear
-            selected={year}
-            onChange={(date) => setYear(date)}
-            showYearPicker
-            dateFormat="yyyy"
+        </FormControl>
+
+        <SelectInput
+          loading={courses === null}
+          loadingText="Carregando..."
+          fullWidth
+          disabled={isDisabled}
+          options={courses || []}
+          getOptionLabel={(option) => option.name}
+          renderInput={(params) => (
+            <TextField {...params} label="Cursos" variant="outlined" />
+          )}
+          onChange={(_, value) => setCourse(value)}
+        />
+
+        <SelectInput
+          loading={subjects === null}
+          loadingText="Carregando..."
+          disabled={course === null || isDisabled}
+          fullWidth
+          options={subjects || []}
+          getOptionLabel={(option) => option.name}
+          renderInput={(params) => (
+            <TextField {...params} label="Disciplina" variant="outlined" />
+          )}
+          onChange={(_, value) => setSubject(value)}
+        />
+
+        <SelectInput
+          loading={teachers === null}
+          loadingText="Carregando..."
+          disabled={teachers === null || isDisabled}
+          fullWidth
+          options={teachers || []}
+          getOptionLabel={(option) => option.name}
+          renderInput={(params) => (
+            <TextField {...params} label="Professor(a)" variant="outlined" />
+          )}
+          onChange={(_, value) => setTeacher(value)}
+        />
+
+        <SelectInput
+          loading={categories === null}
+          loadingText="Carregando..."
+          fullWidth
+          disabled={isDisabled}
+          options={categories || []}
+          getOptionLabel={(option) => option.name}
+          renderInput={(params) => (
+            <TextField {...params} label="Categoria" variant="outlined" />
+          )}
+          onChange={(_, value) => setCategory(value)}
+        />
+
+        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+          <DatePicker
+            style={{ marginTop: `10px` }}
+            fullWidth
+            disabled={isDisabled}
+            views={["year"]}
+            label="Ano"
+            value={date}
+            TextFieldComponent={(params) => (
+              <TextField {...params} label="Ano" variant="outlined" />
+            )}
+            onChange={setDate}
           />
-          <Select onChange={(e) => setPeriod(e.target.value)}>
-            <option disabled selected value>
-              {" "}
-              -- Selecione o Periodo --{" "}
-            </option>
-            {semester.map((s, i) => (
-              <option key={i} value={s}>
-                {s}
-              </option>
-            ))}
-          </Select>
-          <Button type="submit">{status}</Button>
-        </form>
-        {userAlert}
-      </Container>
-    </>
+        </MuiPickersUtilsProvider>
+
+        <SelectInput
+          style={{ marginBottom: `10px` }}
+          fullWidth
+          disabled={isDisabled}
+          options={semesters || []}
+          getOptionLabel={(option) => `${option.year}.${option.name}`}
+          renderInput={(params) => (
+            <TextField {...params} label="Período" variant="outlined" />
+          )}
+          onChange={(_, value) => setSemester(value)}
+        />
+
+        <Button
+          type="submit"
+          variant="contained"
+          fullWidth
+          style={{
+            marginBottom: "10px",
+            backgroundColor: "#6c6f79",
+            color: "white",
+          }}>
+          Enviar Prova
+        </Button>
+      </FormContainer>
+      {userAlert}
+    </Page>
   );
 }
 
-const Container = styled.div`
+const Page = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 80%;
   margin: 0 auto;
-
-  h1 {
-    margin-top: 160px;
-    margin-bottom: 40px;
-    color: #ffffff;
-    font-size: 32px;
-    font-family: "Saira Stencil One", cursive;
-  }
-  button {
-    margin-top: 10px;
-    margin-bottom: 25px;
-    border: none;
-  }
   span {
     color: #ffffff;
   }
@@ -207,50 +234,22 @@ const Container = styled.div`
   }
 `;
 
-const Input = styled.input`
-  display: block;
-  width: 303px;
-  height: 45px;
-  border: 1px solid #d5d5d5;
-  border-radius: 5px;
-  margin: 6px 0;
-  font-size: 15px;
-  color: #000;
-  background-color: ${(props) => (props.disabled ? "#F2F2F2" : "#FFFFFF")};
-  font-family: "Raleway", sans-serif;
-  ::placeholder {
-    color: #000;
-    opacity: 0.5;
-  }
-`;
-
-const Select = styled.select`
-  display: block;
-  width: 303px;
-  height: 45px;
-  border: 1px solid #d5d5d5;
-  border-radius: 5px;
-  margin: 6px 0;
-  font-size: 15px;
-  color: #000;
-  background-color: ${(props) => (props.disabled ? "#F2F2F2" : "#FFFFFF")};
-  font-family: "Raleway", sans-serif;
-  ::placeholder {
-    color: #000;
-    opacity: 0.5;
-  }
-  cursor: default;
-`;
-
-const Button = styled.button`
-  width: 303px;
-  height: 45px;
-  background-color: #6c6f79;
-  box-shadow: 10px 5px 5px 1px rgba(0, 0, 0, 0.5);
-  border-radius: 5px;
+const Title = styled.h1`
+  margin-top: 160px;
+  margin-bottom: 40px;
   color: #ffffff;
-  font-size: 20px;
+  font-size: 32px;
+  font-family: "Saira Stencil One", cursive;
 `;
+
+const FormContainer = styled.form`
+  min-width: 300px;
+  width: 25%;
+  border-radius: 20px;
+  padding: 10px;
+  background-color: #ffffff;
+`;
+
 const UserAlert = styled.div`
   text-align: center;
   font-weight: 700;
@@ -258,20 +257,7 @@ const UserAlert = styled.div`
   color: red;
 `;
 
-const SelectYear = styled(DatePicker)`
-  display: block;
-  width: 303px;
-  height: 45px;
-  border: 1px solid #d5d5d5;
-  border-radius: 5px;
-  margin: 6px 0;
-  font-size: 15px;
-  color: #000;
-  background-color: ${(props) => (props.disabled ? "#F2F2F2" : "#FFFFFF")};
-  font-family: "Raleway", sans-serif;
-  ::placeholder {
-    color: #000;
-    opacity: 0.5;
-  }
+const SelectInput = styled(Autocomplete)`
+  margin-top: 10px;
   cursor: default;
 `;

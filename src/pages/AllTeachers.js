@@ -1,32 +1,61 @@
-import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import axios from "axios";
-import Loader from "react-loader-spinner";
 import styled from "styled-components";
+import Loader from "react-loader-spinner";
+import ListItem from "../components/ListItem";
+
+import {
+  getCourseTeachersExams,
+  getCategories,
+  getCourses,
+} from "../services/apiFunctions";
 
 export default function AllTeachers() {
-  const [teachers, setTeachers] = useState(null);
+  const [courses, setCourses] = useState(null);
+  const [course, setCourse] = useState(null);
+  const [examsCategories, setExamsCategories] = useState(null);
+  const [teachersExams, setTeachersExams] = useState(null);
   const loading = <Loader type="Oval" color="#FFFFFF" height={40} width={40} />;
 
   useEffect(() => {
-    const request = axios.get(`${process.env.REACT_APP_API_BASE_URL}/teachers`);
-    request.then((response) => {
-      setTeachers(response.data);
-    });
+    getCategories(setExamsCategories);
+    getCourses(setCourses);
   }, []);
+
+  useEffect(() => {
+    if (course) {
+      getCourseTeachersExams(setTeachersExams, course.id);
+    }
+  }, [course]);
 
   return (
     <Container>
-      <h1>Professores</h1>
-      {teachers
-        ? teachers.map((t) => {
-            return (
-              <Link key={t.id} to={`/teachers/${t.id}/${t.name}`}>
-                <Item>{t.name}</Item>
-              </Link>
-            );
-          })
-        : loading}
+      <h1>{course ? "Professores" : "Cursos"}</h1>
+
+      {teachersExams &&
+        course &&
+        teachersExams.map((te) => (
+          <ListItem
+            key={te.id}
+            title={te.name}
+            exams={te.exams}
+            examsCategories={examsCategories}
+          />
+        ))}
+
+      {course ? (
+        <>
+          {teachersExams ? `` : loading}
+          <Button onClick={() => setCourse(null)}>Voltar</Button>
+        </>
+      ) : (
+        courses?.map((c) => {
+          return (
+            <Item key={c.id} onClick={() => setCourse(c)}>
+              {c.name}
+            </Item>
+          );
+        })
+      )}
     </Container>
   );
 }
@@ -37,6 +66,7 @@ const Container = styled.div`
   align-items: center;
   justify-content: center;
   width: 80%;
+  max-width: 600px;
   margin: 200px auto;
   h1 {
     font-size: 25px;
@@ -52,4 +82,15 @@ const Item = styled.div`
   color: #ffffff;
   font-size: 15px;
   margin-top: 8px;
+  cursor: pointer;
+`;
+
+const Button = styled.button`
+  font-family: "Saira Stencil One", cursive;
+  font-weight: 400;
+  font-size: 19px;
+  color: #fff;
+  margin: 30px;
+  background: transparent;
+  border-radius: 20px;
 `;
