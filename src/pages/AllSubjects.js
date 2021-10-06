@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
+import Loader from "react-loader-spinner";
 
 import ListItem from "../components/ListItem";
 
@@ -14,6 +15,7 @@ export default function AllSubjects() {
   const [course, setCourse] = useState(null);
   const [examsCategories, setExamsCategories] = useState(null);
   const [subjectsExams, setSubjectsExams] = useState(null);
+  const loading = <Loader type="Oval" color="#FFFFFF" height={40} width={40} />;
 
   useEffect(() => {
     getCategories(setExamsCategories);
@@ -29,6 +31,9 @@ export default function AllSubjects() {
   return (
     <Container>
       <h1>{course ? "Disciplinas" : "Cursos"}</h1>
+
+      {courses ? "" : loading}
+
       {course &&
         subjectsExams &&
         subjectsExams.map((semester) => {

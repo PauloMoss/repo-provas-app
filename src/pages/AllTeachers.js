@@ -31,6 +31,8 @@ export default function AllTeachers() {
     <Container>
       <h1>{course ? "Professores" : "Cursos"}</h1>
 
+      {courses ? "" : loading}
+
       {teachersExams &&
         course &&
         teachersExams.map((te) => (
