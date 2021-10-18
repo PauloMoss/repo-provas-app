@@ -31,11 +31,11 @@ const TestCategoryTitle = styled.div`
 
 const Test = styled.a`
   display: block;
-  color: rgba(0, 0, 0, 0.8);
+  color: rgba(255, 255, 255, 0.8);
   margin-bottom: 3px;
   text-decoration: none;
   & .subject {
-    color: rgba(0, 0, 0, 0.4);
+    color: rgba(255, 255, 255, 0.4);
   }
   &:hover {
     color: #1a73e8;
