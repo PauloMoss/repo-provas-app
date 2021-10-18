@@ -7,6 +7,8 @@ body {
         font-family: 'Raleway', sans-serif;
         background-image: url(${BackgroundImage});
         background-size: cover;
+        background-repeat: no-repeat;
+        overflow-y:hidden;
     }  
 `;
 
